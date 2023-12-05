@@ -18,7 +18,7 @@ public class Server implements Runnable {
             try {
                 int removedValue = queue.take();
                 list.add(removedValue);
-                System.out.println("Server add :" + removedValue + " " + queue.size());
+                System.out.println("Server add :" + removedValue + " " + list.size());
 
             } catch (InterruptedException e) {
                 e.printStackTrace();

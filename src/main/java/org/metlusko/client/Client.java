@@ -24,7 +24,7 @@ public class Client implements Runnable {
 
             try {
                 queue.put(removedValue);
-                System.out.println("Client remove :" + removedValue );
+                System.out.println("Client remove :" + removedValue + " " +list.size());
             } catch (InterruptedException e) {
                e.printStackTrace();
             }
