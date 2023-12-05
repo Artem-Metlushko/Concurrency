@@ -3,23 +3,17 @@ package org.metlusko.client;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.metlusko.request.Request;
-import org.metlusko.server.Server;
-
 
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Getter
 @AllArgsConstructor
 public class Client implements Runnable {
 
     private List<Integer> list;
-
-    private final Lock lock = new ReentrantLock();
     private Request request;
-
-    private Server server;
+    private LinkedBlockingQueue <Integer> queue;
 
 
     @Override
@@ -27,8 +21,13 @@ public class Client implements Runnable {
         while (!list.isEmpty()){
             int index = request.getRandomIndex();
             Integer removedValue = list.remove(index);
-            System.out.println("Client remove :" + removedValue);
-            server.handleRequest(removedValue);
+
+            try {
+                queue.put(removedValue);
+                System.out.println("Client remove :" + removedValue );
+            } catch (InterruptedException e) {
+               e.printStackTrace();
+            }
         }
 
     }

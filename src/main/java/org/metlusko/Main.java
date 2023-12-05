@@ -9,52 +9,36 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         List<Integer> list = getList(100);
 
         Request request = new Request(new Random(), list);
 
-        Server server = new Server(new ArrayList<>());
-        Client client = new Client(list, request,server);
+        LinkedBlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
+        List<Integer> serverList = new ArrayList<>();
 
-//        ThreadPool threadPool = new ThreadPool(client, server);
-//        threadPool.processParallelyWithExecutorService();
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
-        executorService.submit(client);
-        executorService.shutdown();
+        Client client = new Client(list, request, queue);
+        Server server = new Server(serverList, queue);
 
-        try {
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
+
+        executorService.execute(client);
+
+        Future<?> future = executorService.submit(client);
+
+        while (!future.isDone()) {
+            executorService.execute(server);
         }
 
+        executorService.shutdown();
 
-
-//        client.processParallelyWithExecutorService();
-
-//        executorService.submit(client::handleRequest);
-
-
-        System.out.println("============server : "+server.getList().size());
-        server.getList().forEach(System.out::println);
-        System.out.println();
-
-        System.out.println("client :" + client.getList().size());
-        client.getList().forEach(System.out::println);
-
-
-
-        /*extracted(client);
-        System.out.println(server.getSortList());*/
 
     }
-
-
-
 
 
     private static List<Integer> getList(int i) {

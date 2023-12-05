@@ -4,28 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.LinkedBlockingQueue;
+
 @Getter
 @AllArgsConstructor
-public class Server {
-//    private final Lock lock = new ReentrantLock();
+public class Server implements Runnable {
     private List<Integer> list;
+    private LinkedBlockingQueue<Integer> queue;
 
-//    public void processRequest(Integer removedValue) {
-//        if(lock.tryLock()){
-//            try {
-//                System.out.println("Processing request: " + removedValue);
-//                list.add(removedValue);
-//            } finally {
-//                lock.unlock();
-//            }
-//        }
-//    }
+    @Override
+    public void run() {
+        while ((!queue.isEmpty())) {
+            try {
+                int removedValue = queue.take();
+                list.add(removedValue);
+                System.out.println("Server add :" + removedValue + " " + queue.size());
 
-    public void handleRequest(Integer removedValue) {
-        System.out.println("Server add :" + removedValue);
-        list.add(removedValue);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-
 }
