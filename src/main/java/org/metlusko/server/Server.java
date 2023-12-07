@@ -1,28 +1,35 @@
 package org.metlusko.server;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Random;
+import java.util.concurrent.locks.Lock;
 
-@Getter
 @AllArgsConstructor
-public class Server implements Runnable {
-    private List<Integer> list;
-    private LinkedBlockingQueue<Integer> queue;
+public class Server {
+    private final List<Integer> list;
+    private final Lock lock;
+    private final Random random;
 
-    @Override
-    public void run() {
-        while ((!queue.isEmpty())) {
-            try {
-                int removedValue = queue.take();
-                list.add(removedValue);
-                System.out.println("Server add :" + removedValue + " " + list.size());
+    public int response(int value) {
+        lock.lock();
+        sleep();
+        try {
+            list.add(value);
+            System.out.println("Server add :" + value );
+        } finally {
+            lock.unlock();
+        }
+        return list.size();
+    }
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    private void sleep() {
+        try {
+            int time = random.nextInt(10) + 100;
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,17 +1,32 @@
 package org.metlusko.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.metlusko.server.Server;
 
-import java.util.List;
-import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
-@AllArgsConstructor
-public class Request {
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class Request implements Callable<Integer> {
 
-    private final Random random;
-    private final List<Integer> list;
+    private final Server server;
+    private final CountDownLatch latch;
+    private int i;
 
-    public int getRandomIndex() {
-        return random.nextInt(list.size());
+
+    @Override
+    public Integer call() {
+        try {
+            return server.response(i);
+        } finally {
+            latch.countDown();
+            System.out.println("Counter: " + latch.getCount());
+            System.out.println();
+        }
     }
 }
