@@ -8,10 +8,26 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+ext {
+    junitVersion = '5.9.2'
+    lombokVersion = '1.18.26'
+    mockitoVersion = '5.2.0'
+}
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
 }
 
 test {
